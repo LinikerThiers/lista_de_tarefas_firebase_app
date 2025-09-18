@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "76564238547",
+    "project_id": "com-linikerthiers-firebase-app",
+    "storage_bucket": "com-linikerthiers-firebase-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76564238547:android:8c78e672ed175be7374426",
+        "android_client_info": {
+          "package_name": "com.linikerthiers.firebase_app.firebase_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtnsd9hGbed2dXEaQ7a2RkhrnKcyLLiXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
