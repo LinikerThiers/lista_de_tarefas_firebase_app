@@ -2,14 +2,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app/models/tarefa_model.dart';
 import 'package:flutter/material.dart';
 
-class TarefaPage extends StatelessWidget {
-  final descricaoController = TextEditingController();
+class TarefaPage extends StatefulWidget {
   TarefaPage({super.key});
+
+  @override
+  State<TarefaPage> createState() => _TarefaPageState();
+}
+
+class _TarefaPageState extends State<TarefaPage> {
+  final db = FirebaseFirestore.instance;
+
+  final descricaoController = TextEditingController();
+
+  var apenasNaoConcluidos = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Tarefas"),),
+      appBar: AppBar(
+        title: Text("Tarefas"),
+      ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -29,12 +41,15 @@ class TarefaPage extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         child: Text("Cancelar")),
-                    TextButton(onPressed: () async {
-                      var db = FirebaseFirestore.instance;
-                      var tarefa = TarefaModel(descricao: "tarefa 1", concluido: false);
-                      var doc = await db.collection("tarefas").add(tarefa.toJson());
-                      Navigator.pop(context);
-                    }, child: Text("Salvar"))
+                    TextButton(
+                        onPressed: () async {
+                          var tarefa = TarefaModel(
+                              descricao: descricaoController.text,
+                              concluido: false);
+                          await db.collection("tarefas").add(tarefa.toJson());
+                          Navigator.pop(context);
+                        },
+                        child: Text("Salvar"))
                   ],
                 );
               });
@@ -52,8 +67,11 @@ class TarefaPage extends StatelessWidget {
                   children: [
                     Text("Apenas não concluidos"),
                     Switch(
-                      value: true,
-                      onChanged: (bool value) {},
+                      value: apenasNaoConcluidos,
+                      onChanged: (bool value) {
+                        apenasNaoConcluidos = value;
+                        setState(() {});
+                      },
                       activeColor: Colors.purple,
                       activeTrackColor: Colors.purple[400],
                       inactiveThumbColor: Colors.purple[200],
@@ -63,23 +81,55 @@ class TarefaPage extends StatelessWidget {
                 ),
               ),
               Expanded(
-                  child: ListView.builder(
-                      itemCount: 5,
-                      itemBuilder: (BuildContext bc, int index) {
-                        return Dismissible(
-                          onDismissed: (DismissDirection dismissDirection) {},
-                            key: UniqueKey(),
-                            background: Container(
-                              color: Colors.purple,
-                              alignment: Alignment.centerRight,
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Icon(Icons.delete, color: Colors.white),
-                            ),
-                            child: ListTile(
-                              title: Text("Tarefa"),
-                              trailing:
-                                  Switch(value: true, onChanged: (bool value) {}),
-                            ));
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: apenasNaoConcluidos
+                          ? db
+                              .collection("tarefas")
+                              .where('concluido', isEqualTo: false)
+                              .snapshots()
+                          : db
+                              .collection("tarefas")
+                              .snapshots(), //é a ligação dele com o db
+                      builder: (context, snapshot) {
+                        return !snapshot.hasData
+                            ? CircularProgressIndicator()
+                            : ListView(
+                                children: snapshot.data!.docs.map((e) {
+                                  var tarefa = TarefaModel.fromJson(
+                                      (e.data() as Map<String, dynamic>));
+                                  return Dismissible(
+                                      onDismissed: (DismissDirection
+                                          dismissDirection) async {
+                                        await db
+                                            .collection("tarefas")
+                                            .doc(e.id)
+                                            .delete();
+                                      },
+                                      key: Key(e.id),
+                                      background: Container(
+                                        color: Colors.purple,
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        child: Icon(Icons.delete,
+                                            color: Colors.white),
+                                      ),
+                                      child: ListTile(
+                                        title: Text(tarefa.descricao),
+                                        trailing: Switch(
+                                            value: tarefa.concluido,
+                                            onChanged: (bool value) async {
+                                              tarefa.concluido = value;
+                                              await db
+                                                  .collection("tarefas")
+                                                  .doc(e.id)
+                                                  .update(tarefa
+                                                      .toJson()); //ou pode fazer so com o que quer atualizar
+                                              //.update({"concluido": value});
+                                            }),
+                                      ));
+                                }).toList(),
+                              );
                       }))
             ],
           ),
