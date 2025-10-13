@@ -1,4 +1,4 @@
-import 'package:firebase_app/pages/home/home_page.dart';
+import 'package:firebase_app/pages/splash_scream/splash_screen_page.dart';
 import 'package:flutter/material.dart';
 
 class MainApp extends StatelessWidget {
@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const SplashScreenPage(),
     );
   }
 }

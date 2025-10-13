@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app/models/tarefa_model.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class TarefaPage extends StatefulWidget {
   TarefaPage({super.key});
@@ -11,10 +13,20 @@ class TarefaPage extends StatefulWidget {
 
 class _TarefaPageState extends State<TarefaPage> {
   final db = FirebaseFirestore.instance;
-
   final descricaoController = TextEditingController();
-
   var apenasNaoConcluidos = false;
+  String userId = "";
+
+  initState() {
+    super.initState();
+    carregarUsuario();
+  }
+
+  carregarUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('user_id')!;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +57,8 @@ class _TarefaPageState extends State<TarefaPage> {
                         onPressed: () async {
                           var tarefa = TarefaModel(
                               descricao: descricaoController.text,
-                              concluido: false);
+                              concluido: false,
+                              userId: userId);
                           await db.collection("tarefas").add(tarefa.toJson());
                           Navigator.pop(context);
                         },
@@ -86,9 +99,11 @@ class _TarefaPageState extends State<TarefaPage> {
                           ? db
                               .collection("tarefas")
                               .where('concluido', isEqualTo: false)
+                              .where('user_id', isEqualTo: userId)
                               .snapshots()
                           : db
                               .collection("tarefas")
+                              .where('user_id', isEqualTo: userId)
                               .snapshots(), //é a ligação dele com o db
                       builder: (context, snapshot) {
                         return !snapshot.hasData
@@ -120,6 +135,7 @@ class _TarefaPageState extends State<TarefaPage> {
                                             value: tarefa.concluido,
                                             onChanged: (bool value) async {
                                               tarefa.concluido = value;
+                                              tarefa.dataAlteracao = DateTime.now();
                                               await db
                                                   .collection("tarefas")
                                                   .doc(e.id)
