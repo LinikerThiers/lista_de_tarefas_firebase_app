@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
               ),
               TextButton(onPressed: () {
                 Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => ChatPage(nickname: nicknameController.text
+                  builder: (_) => ChatPage(nickName: nicknameController.text
                 )));
               }, child: Text("Entrar no chat"))
             ],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app/models/tarefa_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 class TarefaPage extends StatefulWidget {
   TarefaPage({super.key});
@@ -17,6 +16,7 @@ class _TarefaPageState extends State<TarefaPage> {
   var apenasNaoConcluidos = false;
   String userId = "";
 
+  @override
   initState() {
     super.initState();
     carregarUsuario();
@@ -135,7 +135,8 @@ class _TarefaPageState extends State<TarefaPage> {
                                             value: tarefa.concluido,
                                             onChanged: (bool value) async {
                                               tarefa.concluido = value;
-                                              tarefa.dataAlteracao = DateTime.now();
+                                              tarefa.dataAlteracao =
+                                                  DateTime.now();
                                               await db
                                                   .collection("tarefas")
                                                   .doc(e.id)
