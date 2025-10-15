@@ -12,7 +12,7 @@ Future<void> main() async {
   final remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setConfigSettings(RemoteConfigSettings(
     fetchTimeout: const Duration(minutes: 1),
-    minimumFetchInterval: const Duration(hours: 1),
+    minimumFetchInterval: const Duration(minutes: 0),
   ));
   await remoteConfig.setDefaults(const {
     "example_param_1": 42,
