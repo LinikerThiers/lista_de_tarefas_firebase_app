@@ -25,11 +25,11 @@ class _ExemploPageState extends State<ExemploPage> {
     };
 
     var doc = await db.collection("users").add(user);
-    print('DocumentSnapshot added with ID: ${doc.id}');
+    debugPrint('DocumentSnapshot added with ID: ${doc.id}');
 
     var users = await db.collection("users").get();
     for (var doc in users.docs) {
-      print("${doc.id} => ${doc.data()}");
+      debugPrint("${doc.id} => ${doc.data()}");
     }
   }
 

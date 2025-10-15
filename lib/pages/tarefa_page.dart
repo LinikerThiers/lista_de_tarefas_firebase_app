@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TarefaPage extends StatefulWidget {
-  TarefaPage({super.key});
+  const TarefaPage({super.key});
 
   @override
   State<TarefaPage> createState() => _TarefaPageState();
@@ -60,9 +60,11 @@ class _TarefaPageState extends State<TarefaPage> {
                               concluido: false,
                               userId: userId);
                           await db.collection("tarefas").add(tarefa.toJson());
-                          Navigator.pop(context);
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
                         },
-                        child: Text("Salvar"))
+                        child: Text("Salvar")),
                   ],
                 );
               });

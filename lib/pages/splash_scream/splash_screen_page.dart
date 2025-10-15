@@ -13,7 +13,6 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     carregarHome();
   }
@@ -27,6 +26,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       await prefs.setString('user_id', userId);
     }
     Future.delayed(Duration(seconds: 2), () {
+      if (!mounted) return;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => HomePage()));
     });
