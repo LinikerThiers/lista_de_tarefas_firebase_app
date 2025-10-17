@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app/pages/chat/chat_page.dart';
 import 'package:firebase_app/pages/tarefa_page.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -8,6 +9,7 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseAnalytics analytics = FirebaseAnalytics.instance;
     var nicknameController = TextEditingController();
     final remoteConfig = FirebaseRemoteConfig.instance;
     return Drawer(
@@ -17,6 +19,7 @@ class CustomDrawer extends StatelessWidget {
             leading: Icon(Icons.task),
             title: Text("Tarefas"),
             onTap: () {
+              analytics.logEvent(name: "TarefaPageOpen");
               Navigator.push(
                   context, MaterialPageRoute(builder: (_) => TarefaPage()));
             },
@@ -35,6 +38,7 @@ class CustomDrawer extends StatelessWidget {
                           TextField(),
                           TextButton(
                               onPressed: () {
+                                analytics.logEvent(name: "ChatPageOpen");
                                 nicknameController.text = "";
                                 Navigator.of(context).pop();
                                 Navigator.push(
@@ -54,7 +58,10 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.bug_report),
             title: Text("Firebase Crashlytics"),
-            onTap: () => throw Exception(),
+            onTap: () {
+              analytics.logEvent(name: "Exception");
+              throw Exception();
+            },
           ),
         ],
       ),
